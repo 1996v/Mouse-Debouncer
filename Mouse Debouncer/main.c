@@ -224,7 +224,7 @@ static LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lPara
 				case WM_LBUTTONDOWN: case WM_RBUTTONDOWN: case WM_MBUTTONDOWN: case WM_XBUTTONDOWN:
 				{
 					const uint64_t elapsedTime = currentTime - mouse_button_data[pressedButton].previousTime;
-					if (!mouse_button_data[pressedButton].isBlocked && elapsedTime <= double_click_threshold)
+					if (!mouse_button_data[pressedButton].isBlocked && elapsedTime <= mouse_button_data[pressedButton].threshold)
 					{
 						mouse_button_data[pressedButton].isBlocked = true;
 						mouse_button_data[pressedButton].blocks++;
@@ -412,6 +412,11 @@ static void PrepareMouseButtonData()
 		{
 			mouse_button_data[i].threshold = double_click_threshold_ms;
 			mouse_button_data[i].thresholdMs = double_click_threshold_ms;
+		}
+		else
+		{
+			// If thresholdMs was set by command line args, initialize threshold from it
+			mouse_button_data[i].threshold = mouse_button_data[i].thresholdMs;
 		}
 
 		if (use_qpc)
