@@ -199,7 +199,11 @@ static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 
 static LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam)
 {
-	if (nCode == HC_ACTION && wParam != WM_MOUSEMOVE)
+	// Immediately filter out MOUSEMOVE events to minimize processing overhead
+	if (wParam == WM_MOUSEMOVE)
+		return CallNextHookEx(msll_hook, nCode, wParam, lParam);
+
+	if (nCode == HC_ACTION)
 	{
 		// MSLLHOOKSTRUCT is needed to differentiate between XBUTTON1 & XBUTTON2 and to get the message's time stamp.
 		const PMSLLHOOKSTRUCT pdata = (PMSLLHOOKSTRUCT)lParam;
